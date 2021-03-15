@@ -10,7 +10,7 @@ Future<void> main() async {
     name: 'db2',
     options: Platform.isIOS || Platform.isMacOS
         ? FirebaseOptions(
-            appId: '1:808635764507:ios:9b49254f833ef7dbc70dbe',
+            appId: '1:808635764507:ios:cc23db53e5885879c70dbe',
             apiKey: 'AIzaSyDh8hy76eR38E9Qr7i4s23_W6pdKm8c5Gs',
             projectId: 'ride-sharing-90212',
             messagingSenderId: '808635764507',
