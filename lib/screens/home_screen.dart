@@ -1,3 +1,4 @@
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -15,7 +16,11 @@ class _HomeScreenState extends State<HomeScreen> {
           title: Text('Main Page'),
         ),
         body: MaterialButton(
-          onPressed: () {},
+          onPressed: () {
+            DatabaseReference ref =
+                FirebaseDatabase.instance.reference().child('testing');
+            ref.set('testing connection');
+          },
           color: Colors.blue,
           minWidth: 200,
           child: Text('Hello'),
