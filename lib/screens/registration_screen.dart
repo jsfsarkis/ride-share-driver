@@ -6,9 +6,10 @@ import 'package:flutter/services.dart';
 import 'package:ride_share_driver/components/general_textfield.dart';
 import 'package:ride_share_driver/components/progress_dialog.dart';
 import 'package:ride_share_driver/components/rounded_button.dart';
+import 'package:ride_share_driver/global_variables.dart';
+import 'package:ride_share_driver/screens/vehicle_info_screen.dart';
 
 import '../constants.dart';
-import 'home_screen.dart';
 
 class RegistrationScreen extends StatelessWidget {
   static const String id = 'registration_screen';
@@ -71,8 +72,10 @@ class RegistrationScreen extends StatelessWidget {
       };
       newUserRef.set(userMap);
 
+      currentFirebaseUser = user;
+
       Navigator.pushNamedAndRemoveUntil(
-          context, HomeScreen.id, (Route<dynamic> route) => false);
+          context, VehicleInfoScreen.id, (Route<dynamic> route) => false);
     }
   }
 
