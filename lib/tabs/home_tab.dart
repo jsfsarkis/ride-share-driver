@@ -1,10 +1,13 @@
 import 'dart:async';
 
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_geofire/flutter_geofire.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:ride_share_driver/components/rounded_button.dart';
 import 'package:ride_share_driver/constants.dart';
+import 'package:ride_share_driver/global_variables.dart';
 
 class HomeTab extends StatefulWidget {
   @override
@@ -28,6 +31,23 @@ class _HomeTabState extends State<HomeTab> {
     currentPosition = position;
     LatLng pos = LatLng(position.latitude, position.longitude);
     mapController.animateCamera(CameraUpdate.newLatLng(pos));
+  }
+
+  void goOnline() {
+    Geofire.initialize('driversAvailable');
+
+    Geofire.setLocation(
+      currentFirebaseUser.uid,
+      currentPosition.latitude,
+      currentPosition.longitude,
+    );
+
+    tripRequestRef = FirebaseDatabase.instance
+        .reference()
+        .child('drivers/${currentFirebaseUser.uid}/newtrip');
+
+    tripRequestRef.set('waiting');
+    tripRequestRef.onValue.listen((event) {});
   }
 
   @override
@@ -63,7 +83,7 @@ class _HomeTabState extends State<HomeTab> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 RoundedButton(
-                  onPressed: () {},
+                  onPressed: goOnline,
                   width: MediaQuery.of(context).size.width / 1.5,
                   height: MediaQuery.of(context).size.width / 6,
                   fillColor: colorOrange,
