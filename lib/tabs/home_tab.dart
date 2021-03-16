@@ -25,6 +25,12 @@ class _HomeTabState extends State<HomeTab> {
 
   Position currentPosition;
 
+  // Geolocator geolocator = Geolocator();
+  // var locationOptions = LocationOptions(
+  //   accuracy: LocationAccuracy.bestForNavigation,
+  //   distanceFilter: 4,
+  // );
+
   void getCurrentPosition() async {
     Position position = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.bestForNavigation);
@@ -48,6 +54,18 @@ class _HomeTabState extends State<HomeTab> {
 
     tripRequestRef.set('waiting');
     tripRequestRef.onValue.listen((event) {});
+  }
+
+  void getLocationUpdates() {
+    homeTabPositionStream =
+        Geolocator.getPositionStream().listen((Position position) {
+      currentPosition = position;
+      Geofire.setLocation(
+          currentFirebaseUser.uid, position.latitude, position.longitude);
+
+      LatLng pos = LatLng(position.latitude, position.longitude);
+      mapController.animateCamera(CameraUpdate.newLatLng(pos));
+    });
   }
 
   @override
@@ -83,7 +101,10 @@ class _HomeTabState extends State<HomeTab> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 RoundedButton(
-                  onPressed: goOnline,
+                  onPressed: () {
+                    goOnline();
+                    getLocationUpdates();
+                  },
                   width: MediaQuery.of(context).size.width / 1.5,
                   height: MediaQuery.of(context).size.width / 6,
                   fillColor: colorOrange,
