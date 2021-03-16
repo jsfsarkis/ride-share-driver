@@ -2,20 +2,24 @@ import 'package:connectivity/connectivity.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:ride_share_driver/components/general_textfield.dart';
 import 'package:ride_share_driver/components/progress_dialog.dart';
 import 'package:ride_share_driver/components/rounded_button.dart';
-import 'package:ride_share_driver/global_variables.dart';
-import 'package:ride_share_driver/screens/vehicle_info_screen.dart';
+import 'package:ride_share_driver/screens/registration_screen.dart';
 
 import '../constants.dart';
-import 'login_screen.dart';
+import 'home_screen.dart';
 
-class RegistrationScreen extends StatelessWidget {
-  static const String id = 'registration_screen';
+class LoginScreen extends StatelessWidget {
+  static const String id = 'login_screen';
 
-  // snackbar deprecated to be replaced
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+
+  var emailController = TextEditingController();
+  var passwordController = TextEditingController();
+
   final GlobalKey<ScaffoldState> scaffoldKey = new GlobalKey<ScaffoldState>();
   void showSnackBar(String title) {
     final snackbar = SnackBar(
@@ -31,15 +35,7 @@ class RegistrationScreen extends StatelessWidget {
     scaffoldKey.currentState.showSnackBar(snackbar);
   }
 
-  // to be checked for best use case
-  var fullNameController = TextEditingController();
-  var phoneNumberController = TextEditingController();
-  var emailController = TextEditingController();
-  var passwordController = TextEditingController();
-
-  //to be refactored into services
-  final FirebaseAuth _auth = FirebaseAuth.instance;
-  void registerUser(BuildContext context) async {
+  void login(BuildContext context) async {
     //show dialog
     showDialog(
       barrierDismissible: false,
@@ -49,11 +45,12 @@ class RegistrationScreen extends StatelessWidget {
     );
 
     final User user = (await _auth
-            .createUserWithEmailAndPassword(
+            .signInWithEmailAndPassword(
       email: emailController.text,
       password: passwordController.text,
     )
             .catchError((e) {
+      // navigator to pop the progress dialog in case of error
       Navigator.pop(context);
       PlatformException exception = e;
       showSnackBar(exception.message);
@@ -61,29 +58,22 @@ class RegistrationScreen extends StatelessWidget {
         .user;
 
     if (user != null) {
-      Navigator.pop(context);
-      DatabaseReference newUserRef =
+      // verify login check if info is on database
+      DatabaseReference userRef =
           FirebaseDatabase.instance.reference().child('drivers/${user.uid}');
-
-      //save data on users table
-      Map userMap = {
-        'fullname': fullNameController.text,
-        'email': emailController.text,
-        'phone': phoneNumberController.text,
-      };
-      newUserRef.set(userMap);
-
-      currentFirebaseUser = user;
-
-      Navigator.pushNamedAndRemoveUntil(
-          context, VehicleInfoScreen.id, (Route<dynamic> route) => false);
+      userRef.once().then((DataSnapshot snapshot) => {
+            if (snapshot.value != null)
+              {
+                Navigator.pushNamedAndRemoveUntil(
+                    context, HomeScreen.id, (route) => false)
+              }
+          });
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      key: scaffoldKey,
       body: SafeArea(
         child: SingleChildScrollView(
           child: Padding(
@@ -100,22 +90,13 @@ class RegistrationScreen extends StatelessWidget {
                 ),
                 SizedBox(height: 40.0),
                 Text(
-                  "Create a Driver's Account",
+                  'Sign in as a Driver',
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 25.0,
                     fontFamily: BoldFont,
                   ),
                 ),
-                SizedBox(height: 10.0),
-                GeneralTextField(
-                  onChanged: (value) {},
-                  controller: fullNameController,
-                  keyboardType: TextInputType.text,
-                  obscureText: false,
-                  hintText: 'Full Name',
-                ),
-                SizedBox(height: 10.0),
                 GeneralTextField(
                   onChanged: (value) {},
                   controller: emailController,
@@ -126,60 +107,43 @@ class RegistrationScreen extends StatelessWidget {
                 SizedBox(height: 10.0),
                 GeneralTextField(
                   onChanged: (value) {},
-                  controller: phoneNumberController,
-                  keyboardType: TextInputType.number,
-                  obscureText: false,
-                  hintText: 'Phone Number',
-                ),
-                SizedBox(height: 10.0),
-                GeneralTextField(
-                  onChanged: (value) {},
                   controller: passwordController,
-                  keyboardType: TextInputType.emailAddress,
+                  keyboardType: TextInputType.text,
                   obscureText: true,
                   hintText: 'Password',
                 ),
                 SizedBox(height: 40.0),
                 RoundedButton(
                   onPressed: () async {
-                    // to be refactored later
                     var connectivityResult =
                         await Connectivity().checkConnectivity();
                     if (connectivityResult != ConnectivityResult.mobile &&
                         connectivityResult != ConnectivityResult.wifi) {
                       showSnackBar('No internet connection');
                     }
-                    if (fullNameController.text.length < 3) {
-                      showSnackBar('Please provide a valid full name');
-                      return;
-                    }
-                    if (phoneNumberController.text.length < 10) {
-                      showSnackBar('Please provide a valid phone number');
-                      return;
-                    }
+
                     if (!emailController.text.contains('@')) {
-                      showSnackBar('Please provide a valid email address');
-                      return;
+                      showSnackBar('Please enter valid email address');
                     }
                     if (passwordController.text.length < 8) {
-                      showSnackBar('Please provide a valid password');
-                      return;
+                      showSnackBar('Please enter lengthy password');
                     }
-                    registerUser(context);
+
+                    login(context);
                   },
                   width: MediaQuery.of(context).size.width / 2,
                   height: 40.0,
                   fillColor: colorGreen,
-                  title: 'Register',
+                  title: 'LOGIN',
                   titleColor: Colors.black,
                 ),
                 SizedBox(height: 15.0),
                 GestureDetector(
                   onTap: () {
                     Navigator.pushNamedAndRemoveUntil(
-                        context, LoginScreen.id, (route) => false);
+                        context, RegistrationScreen.id, (route) => false);
                   },
-                  child: Text("Already have an account? Sign in here."),
+                  child: Text("Don't have an account? Sign up here."),
                 ),
               ],
             ),
