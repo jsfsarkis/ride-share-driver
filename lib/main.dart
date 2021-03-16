@@ -1,8 +1,10 @@
 import 'dart:io';
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:ride_share_driver/constants.dart';
+import 'package:ride_share_driver/global_variables.dart';
 import 'package:ride_share_driver/screens/home_screen.dart';
 import 'package:ride_share_driver/screens/login_screen.dart';
 import 'package:ride_share_driver/screens/registration_screen.dart';
@@ -30,6 +32,9 @@ Future<void> main() async {
                 'https://ride-sharing-90212-default-rtdb.firebaseio.com',
           ),
   );
+
+  currentFirebaseUser = await FirebaseAuth.instance.currentUser;
+
   runApp(MyApp());
 }
 
@@ -40,7 +45,8 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         fontFamily: RegularFont,
       ),
-      initialRoute: RegistrationScreen.id,
+      initialRoute:
+          (currentFirebaseUser == null) ? LoginScreen.id : HomeScreen.id,
       routes: {
         HomeScreen.id: (context) => HomeScreen(),
         RegistrationScreen.id: (context) => RegistrationScreen(),
