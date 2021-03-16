@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class HomeTab extends StatefulWidget {
@@ -17,6 +18,16 @@ class _HomeTabState extends State<HomeTab> {
     zoom: 14.4746,
   );
 
+  Position currentPosition;
+
+  void getCurrentPosition() async {
+    Position position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.bestForNavigation);
+    currentPosition = position;
+    LatLng pos = LatLng(position.latitude, position.longitude);
+    mapController.animateCamera(CameraUpdate.newLatLng(pos));
+  }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -28,9 +39,10 @@ class _HomeTabState extends State<HomeTab> {
             zoomControlsEnabled: false,
             mapType: MapType.normal,
             initialCameraPosition: _kGooglePlex,
-            onMapCreated: (GoogleMapController controller) {
+            onMapCreated: (GoogleMapController controller) async {
               _controller.complete(controller);
               mapController = controller;
+              await getCurrentPosition();
             },
           )
         ],

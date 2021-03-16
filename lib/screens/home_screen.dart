@@ -14,12 +14,12 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen>
     with SingleTickerProviderStateMixin {
   TabController tabController;
-  int selecetedIndex = 0;
+  int selectedIndex = 0;
 
   void onItemClicked(int index) {
     setState(() {
-      selecetedIndex = index;
-      tabController.index = selecetedIndex;
+      selectedIndex = index;
+      tabController.index = selectedIndex;
     });
   }
 
@@ -51,7 +51,7 @@ class _HomeScreenState extends State<HomeScreen>
         ),
         bottomNavigationBar: BottomNavigationBar(
           onTap: onItemClicked,
-          currentIndex: selecetedIndex,
+          currentIndex: selectedIndex,
           unselectedItemColor: colorIcon,
           selectedItemColor: colorOrange,
           showUnselectedLabels: true,
