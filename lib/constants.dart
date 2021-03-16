@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 const String RegularFont = 'Brand-Regular';
 const String BoldFont = 'Brand-Bold';
 
-const Color colorPrimary = Color(0xFF2B1A64);
+const Color colorPrimary = Color(0xFF0e1526);
 const Color colorPrimaryDark = Color(0xFF1c3aa9);
 const Color colorAccent = Color(0xFF21ba45);
 const Color colorAccent1 = Color(0xFFe3fded);
@@ -11,7 +11,7 @@ const Color colorAccent1 = Color(0xFFe3fded);
 const Color colorBackground = Color(0xFFFBFAFF);
 
 const Color colorPink = Color(0xFFE66C75);
-const Color colorOrange = Color(0xFFE8913A);
+const Color colorOrange = Color(0xFFd16608);
 const Color colorBlue = Color(0xFF2254A3);
 const Color colorAccentPurple = Color(0xFF4f5cd1);
 

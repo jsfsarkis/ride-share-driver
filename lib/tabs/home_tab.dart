@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:ride_share_driver/components/rounded_button.dart';
+import 'package:ride_share_driver/constants.dart';
 
 class HomeTab extends StatefulWidget {
   @override
@@ -34,6 +36,9 @@ class _HomeTabState extends State<HomeTab> {
       child: Stack(
         children: [
           GoogleMap(
+            padding: EdgeInsets.only(
+              top: MediaQuery.of(context).size.width * 1.6,
+            ),
             myLocationEnabled: true,
             myLocationButtonEnabled: true,
             zoomControlsEnabled: false,
@@ -44,6 +49,29 @@ class _HomeTabState extends State<HomeTab> {
               mapController = controller;
               await getCurrentPosition();
             },
+          ),
+          Container(
+            height: 135,
+            width: double.infinity,
+            color: colorPrimary,
+          ),
+          Positioned(
+            top: 34,
+            left: 0,
+            right: 0,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                RoundedButton(
+                  onPressed: () {},
+                  width: MediaQuery.of(context).size.width / 1.5,
+                  height: MediaQuery.of(context).size.width / 6,
+                  fillColor: colorOrange,
+                  title: 'GO ONLINE',
+                  titleColor: Colors.white,
+                ),
+              ],
+            ),
           )
         ],
       ),
