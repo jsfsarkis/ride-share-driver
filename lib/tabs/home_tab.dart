@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_geofire/flutter_geofire.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:ride_share_driver/components/confirmation_sheet.dart';
 import 'package:ride_share_driver/components/rounded_button.dart';
 import 'package:ride_share_driver/constants.dart';
 import 'package:ride_share_driver/global_variables.dart';
@@ -102,8 +103,11 @@ class _HomeTabState extends State<HomeTab> {
               children: [
                 RoundedButton(
                   onPressed: () {
-                    goOnline();
-                    getLocationUpdates();
+                    showModalBottomSheet(
+                      isDismissible: false,
+                      context: context,
+                      builder: (BuildContext context) => ConfirmationSheet(),
+                    );
                   },
                   width: MediaQuery.of(context).size.width / 1.5,
                   height: MediaQuery.of(context).size.width / 6,
