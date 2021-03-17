@@ -26,11 +26,9 @@ class _HomeTabState extends State<HomeTab> {
 
   Position currentPosition;
 
-  // Geolocator geolocator = Geolocator();
-  // var locationOptions = LocationOptions(
-  //   accuracy: LocationAccuracy.bestForNavigation,
-  //   distanceFilter: 4,
-  // );
+  String availabilityTitle = 'GO ONLINE';
+  Color availabilityColor = colorOrange;
+  bool isAvailable = false;
 
   void getCurrentPosition() async {
     Position position = await Geolocator.getCurrentPosition(
@@ -57,12 +55,22 @@ class _HomeTabState extends State<HomeTab> {
     tripRequestRef.onValue.listen((event) {});
   }
 
+  void goOffline() {
+    Geofire.removeLocation(currentFirebaseUser.uid);
+    tripRequestRef.onDisconnect();
+    tripRequestRef.remove();
+    tripRequestRef = null;
+  }
+
   void getLocationUpdates() {
     homeTabPositionStream =
         Geolocator.getPositionStream().listen((Position position) {
       currentPosition = position;
-      Geofire.setLocation(
-          currentFirebaseUser.uid, position.latitude, position.longitude);
+
+      if (isAvailable) {
+        Geofire.setLocation(
+            currentFirebaseUser.uid, position.latitude, position.longitude);
+      }
 
       LatLng pos = LatLng(position.latitude, position.longitude);
       mapController.animateCamera(CameraUpdate.newLatLng(pos));
@@ -106,13 +114,38 @@ class _HomeTabState extends State<HomeTab> {
                     showModalBottomSheet(
                       isDismissible: false,
                       context: context,
-                      builder: (BuildContext context) => ConfirmationSheet(),
+                      builder: (BuildContext context) => ConfirmationSheet(
+                        title: (!isAvailable) ? 'GO ONLINE' : 'GO OFFLINE',
+                        subtitle: (!isAvailable)
+                            ? 'You are about to become available to receive trip requests.'
+                            : 'You will stop receiving trip requests.',
+                        onPressed: () {
+                          if (!isAvailable) {
+                            goOnline();
+                            getLocationUpdates();
+                            Navigator.pop(context);
+                            setState(() {
+                              availabilityColor = colorGreen;
+                              availabilityTitle = 'GO OFFLINE';
+                              isAvailable = true;
+                            });
+                          } else {
+                            goOffline();
+                            Navigator.pop(context);
+                            setState(() {
+                              availabilityTitle = 'GO ONLINE';
+                              availabilityColor = colorOrange;
+                              isAvailable = false;
+                            });
+                          }
+                        },
+                      ),
                     );
                   },
                   width: MediaQuery.of(context).size.width / 1.5,
                   height: MediaQuery.of(context).size.width / 6,
-                  fillColor: colorOrange,
-                  title: 'GO ONLINE',
+                  fillColor: availabilityColor,
+                  title: availabilityTitle,
                   titleColor: Colors.white,
                 ),
               ],

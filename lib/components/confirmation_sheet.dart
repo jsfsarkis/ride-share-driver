@@ -5,6 +5,16 @@ import 'package:ride_share_driver/constants.dart';
 import 'RoundedOutlineButton.dart';
 
 class ConfirmationSheet extends StatelessWidget {
+  final String title;
+  final String subtitle;
+  final Function onPressed;
+
+  ConfirmationSheet({
+    this.title,
+    this.subtitle,
+    this.onPressed,
+  });
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -22,7 +32,7 @@ class ConfirmationSheet extends StatelessWidget {
         child: Column(
           children: [
             Text(
-              'GO ONLINE',
+              title,
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 22.0,
@@ -32,7 +42,7 @@ class ConfirmationSheet extends StatelessWidget {
             ),
             SizedBox(height: 24.0),
             Text(
-              'You are about to go become available to receive trip requests.',
+              subtitle,
               textAlign: TextAlign.center,
               style: TextStyle(color: colorTextLight),
             ),
@@ -54,10 +64,11 @@ class ConfirmationSheet extends StatelessWidget {
                 Expanded(
                   child: Container(
                     child: RoundedButton(
-                      onPressed: () {},
+                      onPressed: onPressed,
                       width: 135,
                       height: 50,
-                      fillColor: colorGreen,
+                      fillColor:
+                          (title == 'GO ONLINE') ? colorGreen : Colors.red,
                       title: 'CONFIRM',
                       titleColor: Colors.white,
                     ),
